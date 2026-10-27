@@ -26,8 +26,11 @@ build/
 *.db-journal
 *.db-wal
 *.db-shm
-data/
 *.sqlite
+data/*.db
+data/fixtures/audit_*.json
+data/fixtures/sam_*.json
+data/fixtures/voice_*.json
 
 # Environment variables & secrets (CRITICAL: NEVER COMMIT API KEYS)
 .env

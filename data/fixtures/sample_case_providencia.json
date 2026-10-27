@@ -1,0 +1,231 @@
+{
+  "renter_profile": {
+    "max_total_monthly_budget_clp": 680000,
+    "requires_pet_friendly": true,
+    "requires_washer_connection": true,
+    "requires_direct_natural_light": true,
+    "max_minutes_to_metro": 15,
+    "preferred_communes": [
+      "Providencia",
+      "Ñuñoa"
+    ]
+  },
+  "listing_ad": {
+    "title": "Hermoso y Luminoso Depto en Providencia - Pet Friendly",
+    "commune": "Providencia",
+    "address_hint": "Cercano a Av. Eliodoro Yáñez / Metro Salvador",
+    "body_text": "Espectacular departamento 2D 1B en piso 3 en pleno Providencia.\nCompletamente remodelado y con excelente iluminación natural en living y dormitorios.\nValor arriendo: $560.000 CLP mensual.\nGastos comunes bajos: $65.000 CLP aprox.\nIdeal para profesionales jóvenes o parejas con mascotas (100% pet-friendly).\nDisponibilidad inmediata. Se pide 1 mes de garantía y aval."
+  },
+  "audit_result": {
+    "financial_extraction": {
+      "listed_base_rent_clp": 560000,
+      "listed_ggcc_clp": 65000,
+      "contract_rent_clp_or_uf": "560.000 CLP (UF trimestral)",
+      "contract_ggcc_clause_quote": "Gastos comunes de cargo exclusivo del arrendatario según liquidación mensual.",
+      "broker_commission_pct": 50,
+      "security_deposit_months": 1,
+      "readjustment_mechanism": "UF_MAS_SPREAD",
+      "minimum_income_multiplier": 3,
+      "requires_aval": "SI"
+    },
+    "visual_findings": [
+      {
+        "finding_id": "FIND_01_SHAFT_WINDOW",
+        "photo_index": 0,
+        "object_or_defect_label": "Ventana a Pozo de Luz Interior Estrecho",
+        "sam_target_noun_phrase": "interior shaft window",
+        "category": "LIGHTING_VENTILATION",
+        "severity": "HIGH",
+        "bbox_1000": {
+          "x_min": 150,
+          "y_min": 120,
+          "x_max": 450,
+          "y_max": 750
+        },
+        "visual_explanation": "La ventana principal no da a vista despejada sino a un pozo de ventilación interior con muro a menos de 2 metros, reduciendo severamente la luz directa prometida."
+      },
+      {
+        "finding_id": "FIND_02_CEILING_MOISTURE",
+        "photo_index": 1,
+        "object_or_defect_label": "Filtración y Humedad Activa en Cielo de Baño",
+        "sam_target_noun_phrase": "water stain",
+        "category": "DEFECT_RISK",
+        "severity": "CRITICAL",
+        "bbox_1000": {
+          "x_min": 620,
+          "y_min": 50,
+          "x_max": 890,
+          "y_max": 230
+        },
+        "visual_explanation": "Se evidencia mancha de filtración de agua y descascaramiento de pintura en el cielo falso del baño sobre la tina."
+      }
+    ],
+    "cross_modal_contradictions": [
+      {
+        "contradiction_id": "CONTRA_01_PETS",
+        "severity": "CRITICAL",
+        "listing_claim_quote": "100% pet-friendly",
+        "contradicting_source": "PDF_CONTRACT_CLAUSE",
+        "contradicting_evidence_detail": "La Cláusula 11 del borrador del contrato prohíbe taxativamente la tenencia de animales bajo multa de 2 UF y término de contrato.",
+        "impact_on_tenant": "El arrendatario arriesga multas inmediatas o desalojo por tener a su perro."
+      },
+      {
+        "contradiction_id": "CONTRA_02_LIGHTING",
+        "severity": "HIGH",
+        "listing_claim_quote": "excelente iluminación natural en living y dormitorios",
+        "contradicting_source": "PHOTO_EVIDENCE",
+        "contradicting_evidence_detail": "La foto 0 revela orientación hacia pozo de luz oscuro (coordenadas [150, 120, 450, 750]).",
+        "impact_on_tenant": "El teletrabajo requerirá luz artificial constante durante todo el día."
+      },
+      {
+        "contradiction_id": "CONTRA_03_RENOVATION",
+        "severity": "HIGH",
+        "listing_claim_quote": "Completamente remodelado",
+        "contradicting_source": "PHOTO_EVIDENCE",
+        "contradicting_evidence_detail": "La foto 1 evidencia mancha de humedad no reparada en el cielo del baño.",
+        "impact_on_tenant": "Posible rotura de cañería en el piso superior que requerirá obras invasivas."
+      }
+    ],
+    "rubric_15_checks": [
+      {
+        "check_code": "RENT_BASE",
+        "dimension": "FINANCIAL",
+        "title": "Canon Base Declarado",
+        "status": "pass",
+        "provenance_tag": "EXTRACTED_TEXT",
+        "evidence_quote_or_coord": "$560.000 CLP"
+      },
+      {
+        "check_code": "GGCC_EXPLICIT",
+        "dimension": "FINANCIAL",
+        "title": "Gastos Comunes Transparentes",
+        "status": "pass",
+        "provenance_tag": "EXTRACTED_TEXT",
+        "evidence_quote_or_coord": "$65.000 aprox"
+      },
+      {
+        "check_code": "BROKER_COMMISSION",
+        "dimension": "FINANCIAL",
+        "title": "Comisión de Corretaje Informada",
+        "status": "fail",
+        "provenance_tag": "EXTRACTED_PDF",
+        "evidence_quote_or_coord": "Aparece 50% + IVA en contrato, omitida en aviso público"
+      },
+      {
+        "check_code": "UF_INDEXATION",
+        "dimension": "FINANCIAL",
+        "title": "Reajuste Equitativo",
+        "status": "fail",
+        "provenance_tag": "EXTRACTED_PDF",
+        "evidence_quote_or_coord": "Reajuste trimestral en UF genera encarecimiento progresivo acelerado"
+      },
+      {
+        "check_code": "NATURAL_LIGHT",
+        "dimension": "PHYSICAL_VISUAL",
+        "title": "Luz Natural Efectiva",
+        "status": "fail",
+        "provenance_tag": "EXTRACTED_PHOTO",
+        "evidence_quote_or_coord": "Foto 0: bbox [150, 120, 450, 750]"
+      },
+      {
+        "check_code": "MOISTURE_INTEGRITY",
+        "dimension": "PHYSICAL_VISUAL",
+        "title": "Ausencia de Humedad y Filtraciones",
+        "status": "fail",
+        "provenance_tag": "EXTRACTED_PHOTO",
+        "evidence_quote_or_coord": "Foto 1: bbox [620, 50, 890, 230]"
+      },
+      {
+        "check_code": "WASHER_SPACE",
+        "dimension": "PHYSICAL_VISUAL",
+        "title": "Conexión a Lavadora Verificada",
+        "status": "unknown",
+        "provenance_tag": "INFERRED",
+        "evidence_quote_or_coord": "Ninguna foto muestra logia ni conexión en baño/cocina"
+      },
+      {
+        "check_code": "ACOUSTIC_ISOLATION",
+        "dimension": "PHYSICAL_VISUAL",
+        "title": "Aislamiento Acústico",
+        "status": "unknown",
+        "provenance_tag": "INFERRED",
+        "evidence_quote_or_coord": "No verificable sin audio presencial"
+      },
+      {
+        "check_code": "PET_POLICY",
+        "dimension": "CONTRACTUAL_LEGAL",
+        "title": "Permiso Contractual de Mascotas",
+        "status": "fail",
+        "provenance_tag": "EXTRACTED_PDF",
+        "evidence_quote_or_coord": "Cláusula 11 del PDF"
+      },
+      {
+        "check_code": "UNILATERAL_PENALTIES",
+        "dimension": "CONTRACTUAL_LEGAL",
+        "title": "Equilibrio de Multas y Salida Anticipada",
+        "status": "fail",
+        "provenance_tag": "EXTRACTED_PDF",
+        "evidence_quote_or_coord": "Cláusula 14: 3 meses de garantía por salida"
+      },
+      {
+        "check_code": "INCOME_RATIO",
+        "dimension": "CONTRACTUAL_LEGAL",
+        "title": "Criterio de Renta Exigida",
+        "status": "pass",
+        "provenance_tag": "EXTRACTED_PDF",
+        "evidence_quote_or_coord": "Renta 3x requerida"
+      },
+      {
+        "check_code": "AVAL_REQUIREMENT",
+        "dimension": "CONTRACTUAL_LEGAL",
+        "title": "Flexibilidad de Aval / Garantía",
+        "status": "pass",
+        "provenance_tag": "EXTRACTED_TEXT",
+        "evidence_quote_or_coord": "1 aval o seguro de arriendo"
+      },
+      {
+        "check_code": "TRANSIT_PROXIMITY",
+        "dimension": "LIFESTYLE_FIT",
+        "title": "Cercanía a Metro",
+        "status": "pass",
+        "provenance_tag": "EXTRACTED_TEXT",
+        "evidence_quote_or_coord": "8 min caminando a Metro Salvador"
+      },
+      {
+        "check_code": "COMMUNE_ALIGNMENT",
+        "dimension": "LIFESTYLE_FIT",
+        "title": "Calce Comunal",
+        "status": "pass",
+        "provenance_tag": "EXTRACTED_TEXT",
+        "evidence_quote_or_coord": "Providencia"
+      },
+      {
+        "check_code": "BUILDING_AMENITIES",
+        "dimension": "LIFESTYLE_FIT",
+        "title": "Equipamiento del Edificio",
+        "status": "unknown",
+        "provenance_tag": "INFERRED",
+        "evidence_quote_or_coord": "No se mencionan bodegas ni conserjería 24/7"
+      }
+    ],
+    "scam_and_manipulation_signals": [
+      "Aviso omite cobro de comisión de corretaje (59.5% de un mes) que luego aparece en el contrato.",
+      "Contradicción directa entre publicidad pet-friendly y prohibición contractual explícita."
+    ],
+    "tenant_action_pack": {
+      "whatsapp_broker_questions": "Hola, revisé el departamento de Eliodoro Yáñez. Tengo interés, pero antes de agendar visita necesito aclarar 3 puntos:\n1. En el aviso dice \"100% pet-friendly\", pero en el borrador la Cláusula 11 prohíbe mascotas. ¿Aceptan anexo firmado autorizando expresamente a mi perro mediano?\n2. En la foto del baño se aprecia una mancha de humedad en el cielo. ¿Se entrega reparada con prueba de hermeticidad antes de la firma?\n3. ¿Cuál es el promedio real de los últimos 3 meses de gastos comunes según colillas de administración?",
+      "contract_redline_proposals": [
+        {
+          "original_clause_ref": "Cláusula 11 (Prohibición de Mascotas)",
+          "risk_explanation": "Permite al arrendador multar o terminar el contrato aunque el aviso prometía pet-friendly.",
+          "proposed_replacement_text": "Se autoriza expresamente la permanencia de un perro de compañía de tamaño mediano, obligándose el arrendatario a responder por cualquier daño imputable a la misma en las terminaciones."
+        },
+        {
+          "original_clause_ref": "Cláusula 14 (Multa por Salida Anticipada)",
+          "risk_explanation": "Retener 3 meses de garantía por salida con aviso previo es desproporcionado.",
+          "proposed_replacement_text": "El arrendatario podrá poner término al arriendo transcurridos 6 meses, dando aviso con 30 días de anticipación y pagando una indemnización equivalente a un mes de renta."
+        }
+      ]
+    }
+  }
+}
