@@ -3,6 +3,21 @@ import assert from 'node:assert/strict';
 import * as http from 'node:http';
 import { server } from '../dist/server.js';
 
+test('Server API: serves static React Workbench from client/dist', async () => {
+  await new Promise<void>((resolve) => server.listen(0, resolve));
+  const addr = server.address() as any;
+  const baseUrl = `http://localhost:${addr.port}`;
+
+  try {
+    const res = await fetch(`${baseUrl}/`);
+    assert.equal(res.status, 200);
+    const html = await res.text();
+    assert.ok(html.includes('FARO Rayos-X') || html.includes('id="root"'));
+  } finally {
+    server.close();
+  }
+});
+
 test('Server API: health check returns ok and budget summary', async () => {
   await new Promise<void>((resolve) => server.listen(0, resolve));
   const addr = server.address() as any;

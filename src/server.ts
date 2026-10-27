@@ -204,6 +204,44 @@ export const server = http.createServer(async (req, res) => {
       return sendJson(res, 200, transcribeResult);
     }
 
+    // 8. Static file serving from client/dist
+    const clientDist = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../client/dist');
+    if (method === 'GET' && fs.existsSync(clientDist)) {
+      const relPath = pathname === '/' ? 'index.html' : pathname.replace(/^\//, '');
+      const filePath = path.join(clientDist, relPath);
+      // Prevent directory traversal
+      if (filePath.startsWith(clientDist) && fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
+        const ext = path.extname(filePath).toLowerCase();
+        const mimeTypes: Record<string, string> = {
+          '.html': 'text/html; charset=utf-8',
+          '.js': 'application/javascript; charset=utf-8',
+          '.css': 'text/css; charset=utf-8',
+          '.json': 'application/json; charset=utf-8',
+          '.svg': 'image/svg+xml',
+          '.png': 'image/png',
+          '.jpg': 'image/jpeg',
+          '.jpeg': 'image/jpeg',
+          '.ico': 'image/x-icon',
+        };
+        const contentType = mimeTypes[ext] || 'application/octet-stream';
+        res.writeHead(200, {
+          'Content-Type': contentType,
+          'Access-Control-Allow-Origin': '*',
+        });
+        return res.end(fs.readFileSync(filePath));
+      }
+
+      // SPA Fallback: if not an /api route, serve index.html
+      const indexPath = path.join(clientDist, 'index.html');
+      if (!pathname.startsWith('/api/') && fs.existsSync(indexPath)) {
+        res.writeHead(200, {
+          'Content-Type': 'text/html; charset=utf-8',
+          'Access-Control-Allow-Origin': '*',
+        });
+        return res.end(fs.readFileSync(indexPath));
+      }
+    }
+
     // Default 404
     sendJson(res, 404, { error: 'Route not found' });
   } catch (err: any) {
