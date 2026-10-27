@@ -81,3 +81,82 @@ test('Server API: POST /api/audit runs end-to-end pipeline and saves property', 
     server.close();
   }
 });
+
+test('Server API: POST /api/segment returns organic SVG mask and bounding boxes', async () => {
+  await new Promise<void>((resolve) => server.listen(0, resolve));
+  const addr = server.address() as any;
+  const baseUrl = `http://localhost:${addr.port}`;
+
+  try {
+    const res = await fetch(`${baseUrl}/api/segment`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        imageBase64: 'fake_image_base64',
+        targetNounPhrase: 'water stain',
+      }),
+    });
+
+    assert.equal(res.status, 200);
+    const data: any = await res.json();
+    assert.equal(data.target, 'water stain');
+    assert.ok(data.boxes.length > 0);
+    assert.ok(data.svg_mask_path);
+    assert.ok(data.svg_mask_path.startsWith('M '));
+  } finally {
+    server.close();
+  }
+});
+
+test('Server API: POST /api/voice-feedback attaches tour note and updates property contradictions', async () => {
+  await new Promise<void>((resolve) => server.listen(0, resolve));
+  const addr = server.address() as any;
+  const baseUrl = `http://localhost:${addr.port}`;
+
+  try {
+    // First create a property
+    const auditRes = await fetch(`${baseUrl}/api/audit`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        title: 'Depto Providencia Para Voz',
+        commune: 'Providencia',
+        listingText: 'Depto Providencia $560.000',
+        renterProfile: {
+          max_total_monthly_budget_clp: 680000,
+          requires_pet_friendly: true,
+          requires_washer_connection: true,
+          requires_direct_natural_light: true,
+          max_minutes_to_metro: 15,
+          preferred_communes: ['Providencia'],
+        },
+      }),
+    });
+    const auditData: any = await auditRes.json();
+    const propId = auditData.property_id;
+
+    // Send voice tour note
+    const dummyAudioBase64 = Buffer.from(new Uint8Array(44)).toString('base64');
+    const voiceRes = await fetch(`${baseUrl}/api/voice-feedback`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        audioWavBase64: dummyAudioBase64,
+        propertyId: propId,
+      }),
+    });
+
+    assert.equal(voiceRes.status, 200);
+    const voiceData: any = await voiceRes.json();
+    assert.ok(voiceData.text);
+    assert.equal(voiceData.property_updated, true);
+    assert.ok(voiceData.property);
+
+    // Verify acoustic check was set to fail with EXTRACTED_VOICE
+    const acoustic = voiceData.property.audit.rubric_15_checks.find((c: any) => c.check_code === 'ACOUSTIC_ISOLATION');
+    assert.equal(acoustic.status, 'fail');
+    assert.equal(acoustic.provenance_tag, 'EXTRACTED_VOICE');
+  } finally {
+    server.close();
+  }
+});

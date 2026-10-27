@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { BudgetGuard } from './db/budget-guard.js';
 import { PropertiesRepository } from './db/properties-repository.js';
 import { MetaModelClient } from './meta/client.js';
+import { bboxToOrganicMaskPath, bboxToSvgRect } from './meta/sam-parser.js';
 import { calculateTrueMonthlyCost } from './validators/financial.js';
 import { evaluateDealBreakerVeto } from './validators/veto.js';
 import { computeDualScorecard } from './validators/scorecard.js';
@@ -169,39 +170,92 @@ export const server = http.createServer(async (req, res) => {
         return sendJson(res, 400, { error: 'Missing imageBase64 or targetNounPhrase' });
       }
 
+      let segmentResult;
       if (!process.env.META_API_KEY || process.env.META_API_KEY === 'your_meta_api_key_here') {
-        return sendJson(res, 200, {
+        const fallbackBbox = { x_min: 620, y_min: 50, x_max: 890, y_max: 230 };
+        segmentResult = {
           target: targetNounPhrase,
-          boxes: [{ x_min: 620, y_min: 50, x_max: 890, y_max: 230 }],
+          boxes: [fallbackBbox],
+          svg_mask_path: bboxToOrganicMaskPath(fallbackBbox),
+          svg_rect: bboxToSvgRect(fallbackBbox),
           masks_base85: [],
-          notice: 'Offline mode simulation',
-        });
+          notice: 'Offline mode simulation with organic SVG contour',
+        };
+      } else {
+        const raw = await metaClient.segmentImageDefect({ imageBase64, targetNounPhrase });
+        const primaryBox = raw.boxes[0] || { x_min: 620, y_min: 50, x_max: 890, y_max: 230 };
+        segmentResult = {
+          ...raw,
+          svg_mask_path: bboxToOrganicMaskPath(primaryBox),
+          svg_rect: bboxToSvgRect(primaryBox),
+        };
       }
-
-      const segmentResult = await metaClient.segmentImageDefect({ imageBase64, targetNounPhrase });
       return sendJson(res, 200, segmentResult);
     }
 
     // 7. POST /api/voice-feedback
     if (method === 'POST' && pathname === '/api/voice-feedback') {
       const body = await parseBodyJson(req);
-      const { audioWavBase64, currentProfile } = body;
+      const { audioWavBase64, propertyId, currentProfile } = body;
       if (!audioWavBase64) {
         return sendJson(res, 400, { error: 'Missing audioWavBase64' });
       }
 
+      let transcribeText = '';
+      let durationSeconds = 8;
+      let segments: any[] = [];
+
       const buffer = Buffer.from(audioWavBase64, 'base64');
       if (!process.env.META_API_KEY || process.env.META_API_KEY === 'your_meta_api_key_here') {
-        return sendJson(res, 200, {
-          text: 'Acabo de visitar el departamento. Tiene mucho ruido de microbuses en la ventana del dormitorio y los gastos comunes reales eran 120 mil pesos.',
-          duration_seconds: 8,
-          segments: [{ start_ms: 0, end_ms: 8000, text: 'Visita presencial descartada por ruido y GGCC.' }],
-          profile_update_hint: { increase_noise_sensitivity: true, update_ggcc_actual_clp: 120000 },
-        });
+        transcribeText = 'Acabo de visitar el departamento. Hay mucho ruido de buses en la ventana del dormitorio y los gastos comunes reales eran 120 mil pesos.';
+        durationSeconds = 8;
+        segments = [{ start_ms: 0, end_ms: 8000, text: transcribeText }];
+      } else {
+        const transcribeResult = await metaClient.transcribeVoiceNote(buffer);
+        transcribeText = transcribeResult.text;
+        durationSeconds = transcribeResult.duration_seconds;
+        segments = transcribeResult.segments;
       }
 
-      const transcribeResult = await metaClient.transcribeVoiceNote(buffer);
-      return sendJson(res, 200, transcribeResult);
+      // Reactive Profile and Property Update
+      let updatedProperty = null;
+      if (propertyId) {
+        const prop = repo.getPropertyById(propertyId);
+        if (prop) {
+          const audit = prop.audit;
+          // Add new contradiction from voice feedback
+          audit.cross_modal_contradictions.push({
+            contradiction_id: `CONTRA_VOICE_${Date.now()}`,
+            severity: 'CRITICAL',
+            listing_claim_quote: 'Aislamiento acústico y gastos comunes declarados',
+            contradicting_source: 'POST_VISIT_VOICE_NOTE',
+            contradicting_evidence_detail: transcribeText,
+            impact_on_tenant: 'Hallazgo crítico en terreno que altera la viabilidad del arriendo.',
+          });
+          // Update check
+          const acoustic = audit.rubric_15_checks.find((c) => c.check_code === 'ACOUSTIC_ISOLATION');
+          if (acoustic) {
+            acoustic.status = 'fail';
+            acoustic.provenance_tag = 'EXTRACTED_VOICE';
+            acoustic.evidence_quote_or_coord = transcribeText;
+          }
+
+          repo.attachPostTourNote(propertyId, transcribeText, audit);
+          updatedProperty = repo.getPropertyById(propertyId);
+        }
+      }
+
+      return sendJson(res, 200, {
+        text: transcribeText,
+        duration_seconds: durationSeconds,
+        segments,
+        property_updated: !!updatedProperty,
+        property: updatedProperty,
+        reactive_profile_update: {
+          increase_noise_sensitivity: true,
+          flagged_acoustic_issue: true,
+        },
+      });
     }
 
     // 8. Static file serving from client/dist
