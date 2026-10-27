@@ -206,7 +206,7 @@ export const server = http.createServer(async (req, res) => {
 
     // 8. Static file serving from client/dist
     const clientDist = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../client/dist');
-    if (method === 'GET' && fs.existsSync(clientDist)) {
+    if ((method === 'GET' || method === 'HEAD') && fs.existsSync(clientDist)) {
       const relPath = pathname === '/' ? 'index.html' : pathname.replace(/^\//, '');
       const filePath = path.join(clientDist, relPath);
       // Prevent directory traversal
