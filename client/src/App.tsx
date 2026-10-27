@@ -78,20 +78,13 @@ export default function App() {
       {/* Barra superior común */}
       <header className="sticky top-0 z-30 border-b border-stone-200 bg-[#FAF8F5]/95 backdrop-blur">
         <div className="mx-auto flex max-w-[1500px] flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-2.5 lg:px-6">
-          <div className="flex items-center gap-2.5">
-            <span
-              className="flex h-8 w-8 items-center justify-center bg-[#111827] font-serif text-[18px] font-bold text-[#FAF8F5]"
-              aria-hidden
-            >
-              F
-            </span>
-            <div>
-              <p className="text-[14px] font-bold leading-none tracking-tight">
-                FARO <span className="font-serif italic font-normal">Rayos-X</span>
-              </p>
-              <p className="kicker mt-0.5 text-[9px] text-stone-500">Auditor Forense de Arriendos</p>
-            </div>
-          </div>
+          <img
+            src="/brand/faro-horizontal.svg"
+            alt="FARO Rayos-X — Claridad para arrendar"
+            width={350}
+            height={116}
+            className="h-auto w-[200px] shrink-0"
+          />
 
           <div className="flex flex-wrap items-center gap-2">
             {/* Viewport Mode Switcher Button */}

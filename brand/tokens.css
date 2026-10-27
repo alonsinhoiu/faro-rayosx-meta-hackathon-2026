@@ -1,0 +1,12 @@
+:root {
+  --faro-ink: #111827;
+  --faro-paper: #FAF8F5;
+  --faro-beam: #F4B942;
+  --faro-muted: #655F58;
+  --faro-border: #D6D0C7;
+  --faro-pass: #047857;
+  --faro-warning: #B45309;
+  --faro-fail: #B91C1C;
+  --faro-font-sans: Arial, Helvetica, sans-serif;
+  --faro-font-serif: Georgia, serif;
+}

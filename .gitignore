@@ -56,3 +56,8 @@ data/fixtures/voice_*.json
 *.swp
 *.swo
 *~
+
+# Brand build archives (keep source brand/ and pdf/ tracked)
+output/*.zip
+output/faro-identidad-visual/
+
