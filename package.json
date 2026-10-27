@@ -7,6 +7,9 @@
   "scripts": {
     "dev": "node --env-file-if-exists=.env --watch dist/server.js",
     "build": "tsc",
+    "client:dev": "npm run dev --prefix client",
+    "client:build": "npm run build --prefix client",
+    "build:all": "npm run build && npm run client:build",
     "test": "npm run build && node --experimental-strip-types --test tests/**/*.test.ts",
     "smoke:meta": "node --env-file-if-exists=.env scripts/smoke-meta-api.js",
     "eval": "node --env-file-if-exists=.env scripts/evaluate-benchmark.js"
