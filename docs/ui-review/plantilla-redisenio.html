@@ -1,0 +1,566 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FARO Rayos-X · Plantilla de Rediseño de Interfaz y Prompts para ChatGPT</title>
+  <style>
+    :root {
+      --ink: #111827;
+      --paper: #FAF8F5;
+      --beam: #F4B942;
+      --border: #E5E0D8;
+      --pass: #047857;
+      --warn: #B45309;
+      --fail: #B91C1C;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--paper);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      line-height: 1.5;
+      padding: 40px 24px 80px;
+    }
+    .container {
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+    header {
+      border-bottom: 2px solid var(--ink);
+      padding-bottom: 24px;
+      margin-bottom: 40px;
+    }
+    .kicker {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #6B7280;
+    }
+    h1 {
+      font-family: Georgia, serif;
+      font-size: 38px;
+      line-height: 1.15;
+      margin-top: 6px;
+      color: var(--ink);
+    }
+    .lead {
+      font-size: 16px;
+      color: #4B5563;
+      margin-top: 10px;
+      max-width: 900px;
+    }
+    .workflow-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #FFFFFF;
+      border: 1px solid var(--border);
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-top: 16px;
+    }
+    .section-title {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      border-left: 4px solid var(--beam);
+      padding-left: 12px;
+      margin: 48px 0 24px;
+      text-transform: uppercase;
+      font-size: 14px;
+      letter-spacing: 0.1em;
+    }
+    .screen-card {
+      background: #FFFFFF;
+      border: 1px solid var(--border);
+      margin-bottom: 40px;
+      display: grid;
+      grid-template-columns: 550px 1fr;
+      box-shadow: 0 4px 12px rgba(17,24,39,0.03);
+    }
+    @media (max-width: 1024px) {
+      .screen-card { grid-template-columns: 1fr; }
+    }
+    .screen-media {
+      background: #F3EFEA;
+      padding: 24px;
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .screen-media img {
+      max-width: 100%;
+      height: auto;
+      border: 1px solid var(--border);
+      box-shadow: 0 6px 20px rgba(17,24,39,0.08);
+      background: #FFFFFF;
+    }
+    .screen-media .meta-badge {
+      font-size: 11px;
+      font-family: ui-monospace, SFMono-Regular, monospace;
+      color: #6B7280;
+      margin-top: 12px;
+    }
+    .screen-details {
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .screen-header h2 {
+      font-family: Georgia, serif;
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+    .critique-box {
+      margin: 20px 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    @media (max-width: 768px) {
+      .critique-box { grid-template-columns: 1fr; }
+    }
+    .critique-pane {
+      background: var(--paper);
+      border: 1px solid var(--border);
+      padding: 14px;
+      font-size: 13px;
+    }
+    .critique-pane.positive h3 { color: var(--pass); }
+    .critique-pane.improve h3 { color: var(--fail); }
+    .critique-pane h3 {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 8px;
+    }
+    .critique-pane ul {
+      padding-left: 18px;
+      color: #374151;
+    }
+    .critique-pane li {
+      margin-bottom: 6px;
+    }
+    .prompt-box {
+      background: #111827;
+      color: #FAF8F5;
+      padding: 20px;
+      border-radius: 2px;
+      margin-top: 16px;
+      position: relative;
+    }
+    .prompt-box-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      border-bottom: 1px solid #374151;
+      padding-bottom: 8px;
+    }
+    .prompt-box-header span {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--beam);
+    }
+    .copy-btn {
+      background: var(--beam);
+      color: #111827;
+      border: none;
+      padding: 4px 12px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .copy-btn:hover {
+      background: #e5a82e;
+    }
+    .prompt-text {
+      font-size: 12px;
+      font-family: ui-monospace, SFMono-Regular, monospace;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      color: #E5E7EB;
+      max-height: 220px;
+      overflow-y: auto;
+    }
+    .step-banner {
+      background: #FEF3C7;
+      border-left: 4px solid var(--beam);
+      padding: 16px 20px;
+      margin-bottom: 32px;
+      font-size: 14px;
+      color: #92400E;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <div class="kicker">FARO RAYOS-X · SISTEMA DE AUDITORÍA Y REDISEÑO UI/UX</div>
+      <h1>Plantilla Forense de Interfaces</h1>
+      <p class="lead">
+        Esta plantilla reúne las 6 pantallas reales del producto actual (capturadas en resolución Retina 2×), diagnostica qué funciona y qué se debe pulir visualmente, y entrega el <strong>prompt exacto para ChatGPT / generador de imágenes</strong> para crear la maqueta mejorada antes de pasarla a código.
+      </p>
+      <div class="workflow-pill">
+        <span>Flujo sugerido:</span>
+        <strong>1. Copiar Prompt</strong> ➔ 
+        <strong>2. Pegar en ChatGPT / DALL-E</strong> ➔ 
+        <strong>3. Elegir la propuesta que más te guste</strong> ➔ 
+        <strong>4. Pasarla a código React + Tailwind</strong>
+      </div>
+    </header>
+
+    <div class="step-banner">
+      <strong>💡 Sobre el repositorio tipo Figma que mencionas:</strong> Si tienes a mano el nombre o la carpeta del repositorio guardado (ej. tldraw, Penpot, Excalidraw, etc.), dímelo y lo abrimos de inmediato para dibujar o maquetar sobre el lienzo. Mientras tanto, este método de <em>"Pantallazos + Prompts para ChatGPT"</em> te permite iterar a nivel visual sin dibujar a mano cada botón.
+    </div>
+
+    <!-- PANTALLA 1: DESKTOP WORKBENCH -->
+    <div class="section-title">01 · Mesa de Control Forense (Desktop)</div>
+    <div class="screen-card">
+      <div class="screen-media">
+        <a href="screens/01-desktop-workbench.png" target="_blank" title="Clic para ver en tamaño completo">
+          <img src="screens/01-desktop-workbench.png" alt="Desktop Workbench" />
+        </a>
+        <div class="meta-badge">Viewport: 1440 × 960 (Retina 2×) · 3 Columnas</div>
+      </div>
+      <div class="screen-details">
+        <div class="screen-header">
+          <h2>Mesa de Control en 3 Columnas</h2>
+          <p style="font-size:13px; color:#6B7280; margin-top:4px;">Vista integral para auditar un arriendo en computador con todo el expediente a la vista.</p>
+        </div>
+
+        <div class="critique-box">
+          <div class="critique-pane positive">
+            <h3>✓ Lo que funciona bien</h3>
+            <ul>
+              <li>Información pericial completa: Veto duro, perfil, costo real y contradicciones.</li>
+              <li>Visor central con etiquetas BBox interactivas (`0-1000`).</li>
+              <li>Identidad con paleta editorial Tinta `#111827` y Papel `#FAF8F5`.</li>
+            </ul>
+          </div>
+          <div class="critique-pane improve">
+            <h3>⚠ Oportunidades de mejora visual</h3>
+            <ul>
+              <li>Falta aire y jerarquía en la barra superior (los botones se ven apretados).</li>
+              <li>La caja de "VETO DURO" es muy rígida; debería verse como un veredicto pericial más elegante.</li>
+              <li>El visor fotográfico necesita bordes redondeados sutiles y sombra de profundidad (`box-shadow: 0 10px 30px rgba(0,0,0,0.06)`).</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="prompt-box">
+          <div class="prompt-box-header">
+            <span>Prompt listo para ChatGPT</span>
+            <button class="copy-btn" onclick="copyPrompt('prompt-desktop')">Copiar</button>
+          </div>
+          <pre class="prompt-text" id="prompt-desktop">Crea una interfaz de usuario web moderna y ultra profesional en resolución de escritorio (1440x900) para "FARO Rayos-X", una aplicación de auditoría pericial de arriendos inmobiliarios en Chile.
+
+ESTILO VISUAL Y MARCA:
+- Paleta: Fondo papel cálido (#FAF8F5), tipografía y contrastes en tinta negra (#111827), y acento ámbar (#F4B942) simulando el haz de un faro.
+- Tipografía: Sans-serif geométrica moderna (Inter o Helvetica Neue) combinada con titulares editoriales en serif (Georgia) y números tabulares limpios.
+- Estilo: Diseño editorial suizo/nórdico de alto nivel (como Bloomberg Terminal o Monocle), minimalista, sin gradientes púrpuras ni clichés de IA genérica.
+
+DISTRIBUCIÓN EN PANTALLA (3 Columnas fluidas):
+1. HEADER: Barra superior limpia con el logo "FARO Rayos-X" (torre con haz ámbar), badge de estado "API LISTA" en verde esmeralda (#047857), y botones sutiles para "Auditar aviso" y alternar a vista móvil.
+2. COLUMNA IZQUIERDA (320px): Tarjeta de "Veredicto Forense" con badge de advertencia clara (#B91C1C), perfil de restricciones del arrendatario (presupuesto tope $680.000, mascota permitida, lavadora), y tarjeta elegante con el "Costo Mensual Real": $663.407/mes (+18.5% sobre lo publicado) con desglose en barra de progreso.
+3. COLUMNA CENTRAL (Visor de Evidencia): Visor fotográfico amplio de un departamento en Providencia. Sobre la ventana hay un recuadro de detección forense (Bounding Box) con acento ámbar que dice "HIGH CONFIDENCE: Ventana a pozo de luz oscuro". Pestañas limpias para alternar entre "Fotos" y "Contrato PDF".
+4. COLUMNA DERECHA: Tarjeta de "Scorecard Dual" mostrando Calce Verificado (45/100) y Cobertura de Evidencia (80%), lista de 3 contradicciones detectadas en rojo/ámbar, y un botón de acción oscuro "Copiar interrogatorio de WhatsApp para el corredor".
+
+Que la interfaz luzca como un producto SaaS de 10.000 USD de suscripción pericial, con bordes de 1px definidos (#E5E0D8), sombras suaves y micro-detalles impecables.</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANTALLA 2: AUDIT MODAL -->
+    <div class="section-title">02 · Modal de Auditoría de Aviso</div>
+    <div class="screen-card">
+      <div class="screen-media">
+        <a href="screens/02-desktop-audit-form.png" target="_blank" title="Clic para ver en tamaño completo">
+          <img src="screens/02-desktop-audit-form.png" alt="Audit Form Modal" />
+        </a>
+        <div class="meta-badge">Formulario para pegar texto crudo de PortalInmobiliario</div>
+      </div>
+      <div class="screen-details">
+        <div class="screen-header">
+          <h2>Modal "Auditar Aviso Inmobiliario"</h2>
+          <p style="font-size:13px; color:#6B7280; margin-top:4px;">Donde el usuario pega la publicación y las cláusulas para ejecutar la IA de Meta.</p>
+        </div>
+
+        <div class="critique-box">
+          <div class="critique-pane positive">
+            <h3>✓ Lo que funciona bien</h3>
+            <ul>
+              <li>Simple, directo y con campos claros (Comuna, Título, Texto del aviso, Cláusulas).</li>
+              <li>Botón de acción claro para disparar el endpoint `/api/audit`.</li>
+            </ul>
+          </div>
+          <div class="critique-pane improve">
+            <h3>⚠ Oportunidades de mejora visual</h3>
+            <ul>
+              <li>El modal se siente plano; necesita un backdrop blur más cinematográfico (`backdrop-blur-md bg-stone-900/40`).</li>
+              <li>Área de dropzone para arrastrar fotos directamente desde el explorador.</li>
+              <li>Barra de progreso animada cuando el modelo `muse-spark-1.3` está analizando.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="prompt-box">
+          <div class="prompt-box-header">
+            <span>Prompt listo para ChatGPT</span>
+            <button class="copy-btn" onclick="copyPrompt('prompt-modal')">Copiar</button>
+          </div>
+          <pre class="prompt-text" id="prompt-modal">Crea un modal de interfaz moderna (dialog box) para la aplicación "FARO Rayos-X".
+
+El modal se abre sobre la pantalla con un fondo translúcido desenfocado (backdrop blur).
+Dentro del modal:
+- Encabezado: "Ingresar Nuevo Aviso para Auditoría Forense" con subtítulo explicativo.
+- Campo 1: Selector rápido de Comuna (Providencia, Las Condes, Santiago Centro, Ñuñoa) y precio publicado en CLP.
+- Campo 2 (Principal): Textarea moderno con tipografía monoespaciada para pegar el texto copiado de PortalInmobiliario o Yapo, con un placeholder amigable y contador de caracteres.
+- Campo 3: Área de arrastrar y soltar (Drag and Drop) para subir fotos del departamento o borrador del contrato en PDF, con icono estilizado y borde punteado sutil.
+- Botón de envío: Botón principal en tinta oscura (#111827) con texto en blanco "Ejecutar Rayos-X Forense (Meta AI)" con un rayo o haz ámbar (#F4B942).
+- Paleta: Fondo blanco puro (#FFFFFF), bordes delgados (#E5E0D8), acentos ámbar (#F4B942).</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANTALLA 3: MOBILE TAB 1 (RAYOS-X) -->
+    <div class="section-title">03 · Vista Móvil · Pestaña 1: Rayos-X Multimodal</div>
+    <div class="screen-card">
+      <div class="screen-media">
+        <a href="screens/04-mobile-tab-rayosx.png" target="_blank" title="Clic para ver en tamaño completo">
+          <img src="screens/04-mobile-tab-rayosx.png" alt="Mobile Rayos X" style="max-width:320px;" />
+        </a>
+        <div class="meta-badge">Viewport: 390 × 844 (iPhone 14) · Tab Rayos-X</div>
+      </div>
+      <div class="screen-details">
+        <div class="screen-header">
+          <h2>Pestaña Móvil: Rayos-X y Evidencia</h2>
+          <p style="font-size:13px; color:#6B7280; margin-top:4px;">Para cuando el arrendatario está físicamente visitando el departamento.</p>
+        </div>
+
+        <div class="critique-box">
+          <div class="critique-pane positive">
+            <h3>✓ Lo que funciona bien</h3>
+            <ul>
+              <li>Pestañas inferiores estilo app nativa de iOS (`Rayos-X`, `Costo Real`, `Scorecard`, `WhatsApp`).</li>
+              <li>Botones de alternar fotos (Living vs Baño) interactivos.</li>
+            </ul>
+          </div>
+          <div class="critique-pane improve">
+            <h3>⚠ Oportunidades de mejora visual</h3>
+            <ul>
+              <li><strong>El header móvil ocupa demasiado espacio vertical:</strong> 4 botones en 2 líneas bajo el logo roban el 35% de la pantalla. Debe ser un header compacto de 48px de alto.</li>
+              <li>El título del aviso se corta con puntos suspensivos ("Hermoso y Luminoso D...").</li>
+              <li>La foto debería ocupar el ancho completo del teléfono (edge-to-edge con overlays tipo historias o cámara).</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="prompt-box">
+          <div class="prompt-box-header">
+            <span>Prompt listo para ChatGPT</span>
+            <button class="copy-btn" onclick="copyPrompt('prompt-mobile-rayos')">Copiar</button>
+          </div>
+          <pre class="prompt-text" id="prompt-mobile-rayos">Diseña la pantalla de una aplicación móvil iOS nativa (390x844 px) para "FARO Rayos-X", pestaña "Rayos-X Forense".
+
+ESTRUCTURA DE LA PANTALLA MÓVIL:
+1. HEADER SUPERIOR COMPACTO: Altura de 52px con fondo papel (#FAF8F5), el logo de FARO (faro con haz ámbar) a la izquierda, y a la derecha un badge circular pequeño con estado "En línea" y un botón de tres puntos.
+2. BARRA DE RESUMEN INMOBILIARIO: Título legible "Depto en Providencia", con pill de estado "VETO DURO" en rojo (#B91C1C) sutil y el canon real "$663.407/mes".
+3. VISOR FOTOGRÁFICO PRINCIPAL: Foto del living a casi ancho completo con esquinas sutilmente redondeadas. Sobre la ventana hay un recuadro semi-transparente ámbar (#F4B942) con etiqueta flotante "ALERTA: Pozo de luz oscuro (sin sol directo)".
+4. BOTÓN FLOTANTE O DE MICRÓFONO: Botón de "Grabar nota de voz durante la visita" con icono de micrófono para registrar impresiones en vivo.
+5. BOTTOM NAVIGATION BAR: Barra inferior fija con 4 iconos modernos:
+   - "Rayos-X" (activo, con icono de cámara/ojo y punto ámbar #F4B942).
+   - "Costo Real" (icono de pesos/billetera).
+   - "Scorecard" (icono de velocímetro/evaluación).
+   - "WhatsApp" (icono de mensaje).
+
+Estilo súper limpio, premium, minimalista, tipografía Apple/San Francisco o Inter, con fondo #FAF8F5 y acentos #111827 y #F4B942.</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANTALLA 4: MOBILE TAB 2 (COSTO REAL) -->
+    <div class="section-title">04 · Vista Móvil · Pestaña 2: Costo Mensual Real</div>
+    <div class="screen-card">
+      <div class="screen-media">
+        <a href="screens/05-mobile-tab-costo.png" target="_blank" title="Clic para ver en tamaño completo">
+          <img src="screens/05-mobile-tab-costo.png" alt="Mobile Costo Real" style="max-width:320px;" />
+        </a>
+        <div class="meta-badge">Viewport: 390 × 844 · Desglose Financiero</div>
+      </div>
+      <div class="screen-details">
+        <div class="screen-header">
+          <h2>Pestaña Móvil: El Costo Oculto Real</h2>
+          <p style="font-size:13px; color:#6B7280; margin-top:4px;">Revela el verdadero impacto en el bolsillo sumando GGCC y comisiones amortizadas.</p>
+        </div>
+
+        <div class="critique-box">
+          <div class="critique-pane positive">
+            <h3>✓ Lo que funciona bien</h3>
+            <ul>
+              <li>Cifra grande en números tabulares (`$663.407/mes`).</li>
+              <li>Pill de advertencia `+18.5% vs. publicado`.</li>
+              <li>Desglose línea por línea (Canon + GGCC + Comisión + Reajuste UF).</li>
+            </ul>
+          </div>
+          <div class="critique-pane improve">
+            <h3>⚠ Oportunidades de mejora visual</h3>
+            <ul>
+              <li>Hacer un gráfico interactivo o visualizador tipo barra apilada (Donut o Stacked Bar) más llamativo.</li>
+              <li>El Veto Duro inferior se repite y compite con la información financiera.</li>
+              <li>Micro-copia explicativa: "¿Por qué amortizamos la comisión de corretaje a 12 meses?".</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="prompt-box">
+          <div class="prompt-box-header">
+            <span>Prompt listo para ChatGPT</span>
+            <button class="copy-btn" onclick="copyPrompt('prompt-mobile-costo')">Copiar</button>
+          </div>
+          <pre class="prompt-text" id="prompt-mobile-costo">Diseña la pantalla móvil de "Costo Mensual Real" para la app FARO Rayos-X (iPhone, 390x844 px).
+
+CONTENIDO:
+- Gran cifra protagonista arriba: "$663.407 CLP / mes" con un tag rojo "+18.5% sobre lo publicado".
+- Comparador visual interactivo:
+  - "Publicado por corredor: $560.000"
+  - "Presupuesto máximo del usuario: $680.000"
+  - Una barra de progreso segmentada elegante que muestra qué porcentaje ocupa el canon base, los gastos comunes ($65.000), la comisión de corretaje prorrateada ($27.767/mes) y el amortiguador de inflación UF ($10.640/mes).
+- Tarjetas de desglose mensual limpias con iconos discretos.
+- Nota pericial al pie: "Diferencia anual acumulada: pagarás $1.240.884 más de lo que promete el aviso en 12 meses".
+- Barra de navegación inferior con la pestaña "Costo Real" activa con acento ámbar (#F4B942).
+- Fondo papel #FAF8F5, tarjetas blancas con sombra suave, números tabulares claros.</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANTALLA 5: MOBILE TAB 3 (SCORECARD) -->
+    <div class="section-title">05 · Vista Móvil · Pestaña 3: Scorecard & Fallos</div>
+    <div class="screen-card">
+      <div class="screen-media">
+        <a href="screens/06-mobile-tab-scorecard.png" target="_blank" title="Clic para ver en tamaño completo">
+          <img src="screens/06-mobile-tab-scorecard.png" alt="Mobile Scorecard" style="max-width:320px;" />
+        </a>
+        <div class="meta-badge">Viewport: 390 × 844 · Calce vs. Evidencia</div>
+      </div>
+      <div class="screen-details">
+        <div class="screen-header">
+          <h2>Pestaña Móvil: Scorecard Pericial</h2>
+          <p style="font-size:13px; color:#6B7280; margin-top:4px;">Separación matemática entre Calce (45/100) y Cobertura de Evidencia (80%).</p>
+        </div>
+
+        <div class="critique-box">
+          <div class="critique-pane positive">
+            <h3>✓ Lo que funciona bien</h3>
+            <ul>
+              <li>Separación clara de dos métricas independientes (previene engaños si faltan datos).</li>
+              <li>Pills de filtro: `Todos (15)`, `Fallos (6)`, `Dudas (3)`.</li>
+              <li>Tarjetas individuales con badges PASS / FAIL.</li>
+            </ul>
+          </div>
+          <div class="critique-pane improve">
+            <h3>⚠ Oportunidades de mejora visual</h3>
+            <ul>
+              <li>Las dos cajas métricas (45 y 80%) podrían tener anillos de progreso circulares (gauge rings) en SVG.</li>
+              <li>Los botones de filtro podrían ser segmented controls con animación suave.</li>
+              <li>Iconos específicos para cada tipo de regla (mascota, lavadora, sol, precio).</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="prompt-box">
+          <div class="prompt-box-header">
+            <span>Prompt listo para ChatGPT</span>
+            <button class="copy-btn" onclick="copyPrompt('prompt-mobile-scorecard')">Copiar</button>
+          </div>
+          <pre class="prompt-text" id="prompt-mobile-scorecard">Diseña la pantalla móvil del "Scorecard Pericial" para la app FARO Rayos-X (iPhone, 390x844 px).
+
+ELEMENTOS:
+1. DOS ANILLOS CIRCULARES DE PUNTAJE (Gauges):
+   - Izquierda: "Calce de Perfil: 45/100" (color ámbar de precaución #B45309).
+   - Derecha: "Evidencia Verificada: 80%" (color verde esmeralda #047857).
+2. SEGMENTED CONTROL: Pestañas para filtrar la lista: [Todos (15)] [Fallos Críticos (6)] [Incógnitas (3)].
+3. FEED DE REGLAS AUDITADAS:
+   - Tarjeta 1 (FAIL): "Prohibición de Mascotas" con icono de perro tachado y cita de la Cláusula 11 del contrato.
+   - Tarjeta 2 (FAIL): "Humedad en Baño" con miniatura de la foto y etiqueta de fallo estructural.
+   - Tarjeta 3 (PASS): "Precio Base $560.000" dentro del rango presupuestario.
+4. Barra inferior de navegación fija con "Scorecard" activo.</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANTALLA 6: MOBILE TAB 4 (WHATSAPP) -->
+    <div class="section-title">06 · Vista Móvil · Pestaña 4: WhatsApp y Negociación</div>
+    <div class="screen-card">
+      <div class="screen-media">
+        <a href="screens/07-mobile-tab-whatsapp.png" target="_blank" title="Clic para ver en tamaño completo">
+          <img src="screens/07-mobile-tab-whatsapp.png" alt="Mobile WhatsApp" style="max-width:320px;" />
+        </a>
+        <div class="meta-badge">Viewport: 390 × 844 · Mensaje de Contra-Negociación</div>
+      </div>
+      <div class="screen-details">
+        <div class="screen-header">
+          <h2>Pestaña Móvil: Kit de Contra-Oferta WhatsApp</h2>
+          <p style="font-size:13px; color:#6B7280; margin-top:4px;">Genera un mensaje legalmente redactado para encarar al corredor por chat.</p>
+        </div>
+
+        <div class="critique-box">
+          <div class="critique-pane positive">
+            <h3>✓ Lo que funciona bien</h3>
+            <ul>
+              <li>Botón de 1-clic para copiar el texto directo al portapapeles.</li>
+              <li>Mensaje redactado con citas exactas a cláusulas y fotos del aviso.</li>
+            </ul>
+          </div>
+          <div class="critique-pane improve">
+            <h3>⚠ Oportunidades de mejora visual</h3>
+            <ul>
+              <li>La burbuja de texto puede simular directamente un chat de WhatsApp con botón verde de "Abrir en WhatsApp Web / App".</li>
+              <li>Sección de contra-cláusulas legales en acordeones interactivos más pulidos.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="prompt-box">
+          <div class="prompt-box-header">
+            <span>Prompt listo para ChatGPT</span>
+            <button class="copy-btn" onclick="copyPrompt('prompt-mobile-whatsapp')">Copiar</button>
+          </div>
+          <pre class="prompt-text" id="prompt-mobile-whatsapp">Diseña la pantalla móvil del "Kit de Negociación por WhatsApp" para FARO Rayos-X (iPhone, 390x844 px).
+
+ELEMENTOS:
+1. Encabezado editorial: "Kit de Negociación Forense" con subtítulo: "Interrogatorio listo para enviar al corredor".
+2. Burbuja estilo mensaje de WhatsApp con fondo verde claro o gris sutil conteniendo las 3 preguntas clave sobre las cláusulas ocultas (mascota prohibida en cláusula 11, humedad en baño y promedio real de gastos comunes).
+3. Botón de acción principal verde (#25D366 o verde oscuro #047857): "Enviar directamente por WhatsApp" con icono de WhatsApp.
+4. Segundo botón secundario: "Copiar al portapapeles".
+5. Acordeones desplegables con "Contra-cláusulas legales recomendadas" redactadas por abogados para proteger al arrendatario.
+6. Barra inferior con la pestaña "WhatsApp" activa.</pre>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    function copyPrompt(id) {
+      const text = document.getElementById(id).innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        alert("¡Prompt copiado al portapapeles! Ahora puedes pegarlo en ChatGPT.");
+      });
+    }
+  </script>
+</body>
+</html>
